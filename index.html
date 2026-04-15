@@ -1,1199 +1,978 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Denver Odor Pros | Professional Ozone Odor Removal Denver, CO</title>
-<meta name="description" content="Denver's #1 professional ozone odor removal service. We eliminate smoke, pet, mold & vehicle odors — 100% chemical-free. Serving Denver and all surrounding areas within 100 miles. Call (303) 882-2989.">
-<meta name="keywords" content="odor removal Denver, smoke odor removal Denver, pet odor removal Denver, ozone treatment Denver, odor elimination Colorado">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Phone, MapPin, Wind, Home, Car, Building2, ShieldCheck, Clock3, Leaf, Star, CheckCircle2, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-  :root {
-    --black: #0a0a0a;
-    --white: #f8f8f6;
-    --green: #2d7a3a;
-    --green-light: #3d9a4d;
-    --green-pale: #e8f5eb;
-    --green-mid: #c4e8cb;
-    --gray: #6b7280;
-    --gray-light: #f0f0ee;
-    --border: #e2e2de;
-    --phone: (303) 882-2989;
-  }
+const PHONE_DISPLAY = "(303) 882-2989";
+const PHONE_LINK = "tel:+13038822989";
+const BUSINESS_NAME = "Denver Odor Pros";
+const IMAGE_ASSETS = {
+  hero:
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=80",
+  residential:
+    "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+  vehicle:
+    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80",
+  commercial:
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+  pet:
+    "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80",
+  smoke:
+    "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+  ozone:
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+  contact:
+    "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80",
+};
 
-  html { scroll-behavior: smooth; }
+const SERVICE_AREAS = [
+  "Denver",
+  "Aurora",
+  "Lakewood",
+  "Littleton",
+  "Centennial",
+  "Englewood",
+  "Highlands Ranch",
+  "Parker",
+  "Castle Rock",
+  "Boulder",
+  "Longmont",
+  "Fort Collins",
+  "Colorado Springs",
+];
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--white);
-    color: var(--black);
-    overflow-x: hidden;
-    font-size: 16px;
-    line-height: 1.6;
-  }
+const serviceImageBySlug = {
+  "residential-odor-removal": IMAGE_ASSETS.residential,
+  "vehicle-odor-removal": IMAGE_ASSETS.vehicle,
+  "commercial-odor-removal": IMAGE_ASSETS.commercial,
+  "pet-odor-removal": IMAGE_ASSETS.pet,
+  "smoke-odor-removal": IMAGE_ASSETS.smoke,
+  "ozone-treatment": IMAGE_ASSETS.ozone,
+};
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    background: rgba(248,248,246,0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 5vw;
-    height: 68px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: 0.04em;
-    color: var(--black);
-    text-decoration: none;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .nav-logo span { color: var(--green); }
-  .logo-mark {
-    width: 32px; height: 32px;
-    background: var(--green);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .logo-mark svg { width: 18px; height: 18px; fill: white; }
-  .nav-links { display: flex; align-items: center; gap: 2rem; }
-  .nav-links a {
-    text-decoration: none; color: var(--black);
-    font-weight: 500; font-size: 0.9rem;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--green); }
-  .nav-cta {
-    background: var(--green); color: white !important;
-    padding: 10px 20px; border-radius: 6px;
-    font-weight: 600 !important;
-    transition: background 0.2s !important;
-  }
-  .nav-cta:hover { background: var(--green-light) !important; color: white !important; }
+const testimonials = [
+  {
+    name: "Property Owner in Denver",
+    text: "They removed a strong odor from our property fast. The home smelled fresh again, and we felt confident listing it right away.",
+  },
+  {
+    name: "Real Estate Client",
+    text: "Professional, responsive, and easy to work with. The odor was gone and the treatment helped us get the house ready for showings.",
+  },
+  {
+    name: "Vehicle Owner",
+    text: "The smoke smell in my car was stubborn, but Denver Odor Pros took care of it. Huge difference after one treatment.",
+  },
+];
 
-  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
-  .hamburger span { display: block; width: 24px; height: 2px; background: var(--black); border-radius: 2px; transition: 0.3s; }
+const services = [
+  {
+    slug: "residential-odor-removal",
+    icon: Home,
+    title: "Residential Odor Removal",
+    shortTitle: "Residential",
+    heroTitle: "Residential Odor Removal in Denver",
+    seoTitle: "Residential Odor Removal Denver | Denver Odor Pros",
+    seoDescription:
+      "Professional residential odor removal in Denver, Colorado. Remove smoke, pet, mold, cooking, and musty odors with chemical-free ozone treatment.",
+    description:
+      "Remove smoke, pet, mold, cooking, and musty odors from homes, apartments, condos, basements, garages, and rental units.",
+    longDescription:
+      "Denver Odor Pros provides residential odor removal in Denver for homeowners, landlords, property managers, and real estate professionals who need fast, professional results. We treat homes, apartments, condos, basements, garages, and rental properties with professional ozone equipment designed to eliminate odor at the source instead of covering it up. This service is ideal for smoke odor, pet odor, cooking smells, musty odors, mold-related smells, and general stale interior air that can make a property feel dirty or hard to sell.",
+    bullets: [
+      "Smoke odor removal for homes and apartments",
+      "Pet urine and pet odor treatment",
+      "Mold, mildew, and musty smell reduction",
+      "Great for listing prep, move-outs, and turnovers",
+    ],
+  },
+  {
+    slug: "vehicle-odor-removal",
+    icon: Car,
+    title: "Vehicle Odor Removal",
+    shortTitle: "Vehicle",
+    heroTitle: "Vehicle Odor Removal in Denver",
+    seoTitle: "Vehicle Odor Removal Denver | Car Smoke Odor Removal",
+    seoDescription:
+      "Professional vehicle odor removal in Denver. Ozone treatment for smoke, pet, mildew, food, and stubborn car odors in cars, SUVs, trucks, and fleets.",
+    description:
+      "Professional ozone treatment for cars, SUVs, trucks, and work vehicles with smoke, pet, mildew, and food-related odors.",
+    longDescription:
+      "Our vehicle odor removal service in Denver is designed for drivers, dealerships, fleet owners, rideshare drivers, and car owners dealing with stubborn interior smells. We use ozone treatment to target odor inside cars, SUVs, trucks, and work vehicles affected by smoke, pet smells, mildew, spilled food, and heavy interior odor buildup. If your vehicle still smells bad after basic cleaning, this service is built to go deeper and help restore a cleaner, fresher interior environment.",
+    bullets: [
+      "Car smoke odor removal",
+      "Pet odor treatment for vehicle interiors",
+      "Mildew and stale smell reduction",
+      "Helpful for dealerships and personal vehicles",
+    ],
+  },
+  {
+    slug: "commercial-odor-removal",
+    icon: Building2,
+    title: "Commercial Odor Removal",
+    shortTitle: "Commercial",
+    heroTitle: "Commercial Odor Removal in Denver",
+    seoTitle: "Commercial Odor Removal Denver | Office & Rental Odor Service",
+    seoDescription:
+      "Commercial odor removal in Denver for offices, rentals, Airbnb units, retail spaces, and commercial properties. Fast ozone treatment and odor elimination.",
+    description:
+      "Odor elimination for offices, retail spaces, Airbnb units, apartment turnovers, and other commercial properties.",
+    longDescription:
+      "Denver Odor Pros offers commercial odor removal in Denver for offices, retail spaces, Airbnb properties, apartment buildings, rental turnovers, and other commercial environments that need to smell clean and presentable. Unpleasant odors can affect customer experience, delay occupancy, and create a poor first impression. Our ozone treatment service helps reduce smoke, food, musty, pet, and general interior odors so the space feels more professional, fresh, and ready for clients, guests, tenants, or staff.",
+    bullets: [
+      "Airbnb and short-term rental odor removal",
+      "Office and retail odor treatment",
+      "Apartment turnover and vacancy prep",
+      "Fast scheduling for business needs",
+    ],
+  },
+  {
+    slug: "pet-odor-removal",
+    icon: ShieldCheck,
+    title: "Pet Odor Removal",
+    shortTitle: "Pet Odor",
+    heroTitle: "Pet Odor Removal in Denver",
+    seoTitle: "Pet Odor Removal Denver | Pet Urine Odor Treatment",
+    seoDescription:
+      "Pet odor removal in Denver, Colorado. Remove stubborn pet urine and pet smells from homes, rentals, apartments, and vehicles with ozone treatment.",
+    description:
+      "Target stubborn pet urine and pet-related odors at the source instead of covering them up with fragrance.",
+    longDescription:
+      "Pet odor can be one of the hardest smells to remove, especially when the odor has built up over time. Our pet odor removal service in Denver is designed for homes, apartments, rentals, and vehicles dealing with strong pet smells and pet urine odor. We focus on eliminating odor at the source with professional ozone treatment instead of simply masking it. This service is especially useful for landlords, homeowners preparing to sell, tenants moving out, and property managers trying to get a space ready for the next occupant.",
+    bullets: [
+      "Pet urine odor removal",
+      "Ideal for rental turnovers and listing prep",
+      "Works for homes, apartments, and cars",
+      "Helps spaces smell clean again fast",
+    ],
+  },
+  {
+    slug: "smoke-odor-removal",
+    icon: Wind,
+    title: "Smoke Odor Removal",
+    shortTitle: "Smoke Odor",
+    heroTitle: "Smoke Odor Removal in Denver",
+    seoTitle: "Smoke Odor Removal Denver | Cigarette Smoke Odor Service",
+    seoDescription:
+      "Smoke odor removal in Denver for homes, apartments, rentals, and vehicles. Remove cigarette, cigar, and stubborn smoke smells with ozone treatment.",
+    description:
+      "Get rid of cigarette, cigar, and general smoke odors from walls, carpets, air space, and interior surfaces.",
+    longDescription:
+      "Smoke odor can stick to surfaces, soft materials, and the air itself, making a property or vehicle feel impossible to refresh. Denver Odor Pros provides smoke odor removal in Denver for homes, apartments, garages, rental units, and vehicles affected by cigarette smoke, cigar smoke, and long-term indoor smoke exposure. Our process is designed to target smoke odor at the source with professional ozone treatment, helping properties show better, feel cleaner, and become easier to rent, sell, or enjoy again.",
+    bullets: [
+      "Cigarette smoke odor removal",
+      "Helpful for rental homes and move-outs",
+      "Great for cars and garages too",
+      "Supports real estate and property turnover goals",
+    ],
+  },
+  {
+    slug: "ozone-treatment",
+    icon: Leaf,
+    title: "Ozone Treatment",
+    shortTitle: "Ozone Treatment",
+    heroTitle: "Ozone Treatment in Denver",
+    seoTitle: "Ozone Treatment Denver | Chemical-Free Odor Removal",
+    seoDescription:
+      "Chemical-free ozone treatment in Denver for odor removal in homes, apartments, vehicles, and commercial spaces. Fast scheduling and professional service.",
+    description:
+      "100% chemical-free ozone odor removal designed to break down odor molecules and leave the space feeling clean and fresh.",
+    longDescription:
+      "Our ozone treatment service in Denver is the core of how Denver Odor Pros removes stubborn odors from homes, apartments, vehicles, and commercial properties. Ozone treatment is designed to break down odor molecules instead of hiding them behind sprays or fragrance. This makes it a strong option for smoke odors, pet odors, musty smells, cooking smells, and general odor issues that standard cleaning may not fully solve. We use professional equipment and a simple process focused on fast scheduling, clear communication, and real odor removal results.",
+    bullets: [
+      "Chemical-free odor removal process",
+      "Works on smoke, pet, mold, and cooking odors",
+      "Ideal for residential and commercial use",
+      "Fast scheduling across Denver and nearby areas",
+    ],
+  },
+];
 
-  .mobile-menu {
-    display: none; position: fixed; top: 68px; left: 0; right: 0;
-    background: var(--white); border-bottom: 1px solid var(--border);
-    padding: 1.5rem 5vw; z-index: 998; flex-direction: column; gap: 1rem;
-  }
-  .mobile-menu a { text-decoration: none; color: var(--black); font-weight: 500; font-size: 1.1rem; padding: 8px 0; border-bottom: 1px solid var(--border); }
-  .mobile-menu.open { display: flex; }
+const pageMeta = {
+  home: {
+    title: "Odor Removal Denver | Denver Odor Pros",
+    description:
+      "Professional odor removal in Denver, Colorado. Chemical-free ozone treatment for smoke, pet, mold, cooking, and vehicle odors. Fast scheduling available.",
+  },
+  services: {
+    title: "Odor Removal Services in Denver | Smoke, Pet & Vehicle Odor",
+    description:
+      "Explore Denver Odor Pros services for homes, apartments, vehicles, and commercial properties. Fast, professional ozone odor removal in Denver.",
+  },
+  about: {
+    title: "About Denver Odor Pros | Ozone Treatment Experts in Denver",
+    description:
+      "Learn about Denver Odor Pros, a Denver-based odor removal company helping homeowners, landlords, agents, and property managers remove odors at the source.",
+  },
+  contact: {
+    title: "Contact Denver Odor Pros | Get a Free Odor Removal Estimate",
+    description:
+      "Contact Denver Odor Pros for a free estimate. Serving Denver and nearby cities with fast scheduling for smoke, pet, mold, and vehicle odor removal.",
+  },
+};
 
-  /* ── HERO ── */
-  #home {
-    min-height: 100vh;
-    padding: 68px 5vw 0;
-    display: flex; align-items: center;
-    position: relative;
-    overflow: hidden;
-    background: var(--black);
-  }
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 60% at 70% 50%, rgba(45,122,58,0.18) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(45,122,58,0.1) 0%, transparent 60%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-inner {
-    position: relative; z-index: 2;
-    max-width: 1200px; margin: 0 auto; width: 100%;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-    padding: 5rem 0;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(45,122,58,0.2); border: 1px solid rgba(45,122,58,0.4);
-    color: #6dd97a; padding: 6px 14px; border-radius: 100px;
-    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
-    text-transform: uppercase; margin-bottom: 1.5rem;
-  }
-  .hero-badge::before { content: ''; width: 6px; height: 6px; background: #6dd97a; border-radius: 50%; animation: pulse-dot 2s infinite; }
-  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+function useHashRoute() {
+  const getRoute = () => {
+    const hash = window.location.hash.replace("#/", "").replace("#", "");
+    return hash || "home";
+  };
 
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 6vw, 5.5rem);
-    line-height: 0.95;
-    color: var(--white);
-    letter-spacing: 0.01em;
-    margin-bottom: 1.5rem;
-  }
-  h1 em { font-style: normal; color: var(--green-light); }
+  const [route, setRoute] = useState(getRoute());
 
-  .hero-sub {
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
-    color: rgba(248,248,246,0.65);
-    max-width: 480px;
-    margin-bottom: 2.5rem;
-    font-weight: 300;
-    line-height: 1.7;
-  }
-  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .btn-primary {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--green); color: white;
-    padding: 15px 28px; border-radius: 8px;
-    text-decoration: none; font-weight: 600; font-size: 1rem;
-    transition: all 0.2s; border: 2px solid var(--green);
-    white-space: nowrap;
-  }
-  .btn-primary:hover { background: var(--green-light); border-color: var(--green-light); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,122,58,0.35); }
-  .btn-secondary {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: transparent; color: white;
-    padding: 15px 28px; border-radius: 8px;
-    text-decoration: none; font-weight: 600; font-size: 1rem;
-    border: 2px solid rgba(255,255,255,0.3);
-    transition: all 0.2s; white-space: nowrap;
-  }
-  .btn-secondary:hover { border-color: white; background: rgba(255,255,255,0.08); }
+  useEffect(() => {
+    const onHashChange = () => setRoute(getRoute());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
-  .hero-stats {
-    display: flex; gap: 2rem; margin-top: 3rem;
-    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;
-  }
-  .stat-item { display: flex; flex-direction: column; }
-  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--green-light); line-height: 1; }
-  .stat-label { font-size: 0.75rem; color: rgba(248,248,246,0.5); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+  return [route, (next) => (window.location.hash = `#/${next}`)];
+}
 
-  .hero-visual {
-    display: flex; flex-direction: column; gap: 1rem;
-    animation: float-in 0.8s ease-out;
-  }
-  @keyframes float-in { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+function SEO({ route }) {
+  const servicePage = services.find((item) => item.slug === route);
+  const meta = servicePage
+    ? { title: servicePage.seoTitle, description: servicePage.seoDescription }
+    : pageMeta[route] || pageMeta.home;
 
-  .odor-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    transition: border-color 0.3s;
-    overflow: hidden;
-    cursor: pointer;
-  }
-  .odor-card:hover { border-color: rgba(45,122,58,0.4); }
-  .odor-card.open { border-color: rgba(45,122,58,0.5); }
-  .odor-card-header {
-    padding: 1.2rem 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .odor-icon { font-size: 1.8rem; flex-shrink: 0; }
-  .odor-title { color: white; font-weight: 600; font-size: 0.95rem; }
-  .odor-subtitle { color: rgba(248,248,246,0.5); font-size: 0.8rem; }
-  .odor-check {
-    margin-left: auto; width: 24px; height: 24px;
-    background: var(--green); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    transition: transform 0.3s, background 0.3s;
-  }
-  .odor-check svg { width: 12px; height: 12px; fill: white; }
-  .odor-card.open .odor-check { transform: rotate(45deg); background: rgba(255,255,255,0.2); }
-  .odor-dropdown {
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.4s ease;
-    border-top: 0px solid rgba(255,255,255,0.08);
-  }
-  .odor-card.open .odor-dropdown { max-height: 220px; border-top-width: 1px; }
-  .odor-dropdown-inner { padding: 1rem 1.5rem 1.2rem 4.5rem; }
-  .odor-dropdown-inner p { color: rgba(248,248,246,0.65); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.75rem; }
-  .odor-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .odor-tags span {
-    background: rgba(45,122,58,0.2); border: 1px solid rgba(45,122,58,0.35);
-    color: #8ee897; font-size: 0.72rem; font-weight: 600;
-    padding: 3px 10px; border-radius: 100px;
-  }
+  useEffect(() => {
+    document.title = meta.title;
 
-  /* ── TRUST STRIP ── */
-  .trust-strip {
-    background: var(--green);
-    padding: 1.2rem 5vw;
-    display: flex; justify-content: center; align-items: center;
-    gap: 3rem; flex-wrap: wrap;
-  }
-  .trust-item {
-    display: flex; align-items: center; gap: 10px;
-    color: white; font-weight: 600; font-size: 0.9rem;
-    white-space: nowrap;
-  }
-  .trust-item svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.8); flex-shrink: 0; }
+    let description = document.querySelector('meta[name="description"]');
+    if (!description) {
+      description = document.createElement("meta");
+      description.name = "description";
+      document.head.appendChild(description);
+    }
+    description.setAttribute("content", meta.description);
+  }, [meta]);
 
-  /* ── SECTIONS ── */
-  section { padding: 5rem 5vw; }
-  .section-inner { max-width: 1200px; margin: 0 auto; }
-  .section-tag {
-    display: inline-block;
-    background: var(--green-pale); color: var(--green);
-    padding: 4px 14px; border-radius: 100px;
-    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 1rem;
-  }
-  h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1.15;
-    margin-bottom: 1rem;
-    color: var(--black);
-  }
-  h2 em { font-style: italic; color: var(--green); }
-  .section-lead {
-    font-size: 1.1rem; color: var(--gray);
-    max-width: 560px; line-height: 1.7;
-    margin-bottom: 3rem;
-  }
+  return null;
+}
 
-  /* ── SERVICES ── */
-  #services { background: var(--gray-light); }
-  .services-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .service-card {
-    background: white; border-radius: 16px;
-    padding: 2rem; border: 1px solid var(--border);
-    transition: all 0.3s; position: relative; overflow: hidden;
-  }
-  .service-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0;
-    height: 3px; background: var(--green); transform: scaleX(0);
-    transform-origin: left; transition: transform 0.3s;
-  }
-  .service-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-3px); }
-  .service-card:hover::before { transform: scaleX(1); }
-  .service-icon {
-    font-size: 2.5rem; margin-bottom: 1rem;
-    display: block; line-height: 1;
-  }
-  .service-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--black); }
-  .service-card p { color: var(--gray); font-size: 0.9rem; line-height: 1.7; }
-  .service-card ul { list-style: none; margin-top: 1rem; }
-  .service-card ul li {
-    padding: 4px 0; color: var(--gray); font-size: 0.85rem;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .service-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+function Container({ children, className = "" }) {
+  return <div className={`mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>;
+}
 
-  /* ── HOW IT WORKS ── */
-  #how-it-works { background: var(--black); }
-  #how-it-works h2 { color: var(--white); }
-  #how-it-works .section-lead { color: rgba(248,248,246,0.6); }
-  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; }
-  .step {
-    position: relative; padding: 2rem;
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
-    background: rgba(255,255,255,0.03);
-    transition: border-color 0.3s;
-  }
-  .step:hover { border-color: rgba(45,122,58,0.4); }
-  .step-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 4rem; color: rgba(45,122,58,0.25);
-    line-height: 1; margin-bottom: 1rem;
-  }
-  .step h3 { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
-  .step p { color: rgba(248,248,246,0.55); font-size: 0.9rem; line-height: 1.7; }
-
-  /* ── REAL ESTATE ── */
-  #real-estate {
-    background: linear-gradient(135deg, var(--green) 0%, #1e5c28 100%);
-    color: white;
-  }
-  .re-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-  #real-estate h2 { color: white; }
-  #real-estate .section-tag { background: rgba(255,255,255,0.2); color: white; }
-  .re-list { list-style: none; margin: 2rem 0; }
-  .re-list li {
-    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.15);
-    display: flex; align-items: center; gap: 12px;
-    font-size: 1rem; font-weight: 500;
-  }
-  .re-list li::before { content: '→'; color: rgba(255,255,255,0.6); font-weight: 700; }
-  .re-right {
-    background: rgba(255,255,255,0.1); border-radius: 20px;
-    padding: 2.5rem; border: 1px solid rgba(255,255,255,0.2);
-  }
-  .re-right h3 { color: white; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; }
-  .audience-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  .audience-tag {
-    background: rgba(255,255,255,0.15); color: white;
-    padding: 8px 16px; border-radius: 100px;
-    font-size: 0.85rem; font-weight: 600;
-    border: 1px solid rgba(255,255,255,0.25);
-  }
-  .re-stat-block { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2); }
-  .re-stat-block p { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.7; }
-
-  /* ── TESTIMONIALS ── */
-  #testimonials { background: var(--gray-light); }
-  .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-  .testimonial {
-    background: white; border-radius: 16px;
-    padding: 2rem; border: 1px solid var(--border);
-  }
-  .stars { color: #f59e0b; font-size: 1rem; margin-bottom: 1rem; letter-spacing: 2px; }
-  .testimonial blockquote {
-    font-family: 'DM Serif Display', serif;
-    font-style: italic; font-size: 1.05rem;
-    line-height: 1.6; color: var(--black);
-    margin-bottom: 1.5rem;
-  }
-  .testimonial-author { display: flex; align-items: center; gap: 12px; }
-  .author-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--green); display: flex;
-    align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 1rem;
-    flex-shrink: 0;
-  }
-  .author-name { font-weight: 700; font-size: 0.95rem; }
-  .author-role { font-size: 0.8rem; color: var(--gray); }
-
-  /* ── SERVICE AREA ── */
-  #service-area { background: white; }
-  .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-  .cities-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
-  .city-tag {
-    background: var(--green-pale); color: var(--green);
-    padding: 6px 14px; border-radius: 100px;
-    font-size: 0.85rem; font-weight: 600;
-    border: 1px solid var(--green-mid);
-  }
-  .area-visual {
-    background: var(--black); border-radius: 20px;
-    padding: 3rem; display: flex; flex-direction: column; gap: 1.5rem;
-  }
-  .area-stat {
-    display: flex; align-items: center; gap: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem;
-  }
-  .area-stat:last-child { border-bottom: none; padding-bottom: 0; }
-  .area-stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.8rem; color: var(--green-light);
-    line-height: 1; flex-shrink: 0; min-width: 80px;
-  }
-  .area-stat-text h4 { color: white; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-  .area-stat-text p { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
-
-  /* ── ABOUT ── */
-  #about { background: var(--gray-light); }
-  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-  .about-left h2 { margin-bottom: 1.5rem; }
-  .about-left p { color: var(--gray); line-height: 1.8; margin-bottom: 1.5rem; }
-  .values-list { list-style: none; }
-  .values-list li {
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-    display: flex; align-items: flex-start; gap: 12px;
-    color: var(--black); font-weight: 500;
-  }
-  .values-list li span:first-child {
-    width: 28px; height: 28px; background: var(--green-pale);
-    border-radius: 6px; display: flex; align-items: center; justify-content: center;
-    color: var(--green); font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;
-  }
-  .about-right {
-    background: var(--black); border-radius: 20px;
-    padding: 3rem;
-  }
-  .about-right h3 { color: white; font-size: 1.3rem; font-weight: 700; margin-bottom: 2rem; }
-  .why-item { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .why-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .why-item h4 { color: var(--green-light); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-  .why-item p { color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.6; }
-
-  /* ── CONTACT ── */
-  #contact { background: var(--black); }
-  #contact h2 { color: white; }
-  #contact .section-lead { color: rgba(248,248,246,0.6); }
-  #contact .section-tag { background: rgba(45,122,58,0.2); color: #6dd97a; border: 1px solid rgba(45,122,58,0.3); }
-  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-  .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
-  .contact-item {
-    display: flex; align-items: flex-start; gap: 1rem;
-    padding: 1.5rem; border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-  }
-  .contact-icon {
-    width: 44px; height: 44px; border-radius: 10px;
-    background: rgba(45,122,58,0.2); display: flex;
-    align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .contact-icon svg { width: 20px; height: 20px; fill: var(--green-light); }
-  .contact-item h4 { color: rgba(255,255,255,0.6); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
-  .contact-item a, .contact-item p { color: white; font-weight: 600; font-size: 1.05rem; text-decoration: none; }
-  .contact-item a:hover { color: var(--green-light); }
-  .contact-form {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px; padding: 2.5rem;
-  }
-  .contact-form h3 { color: white; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; }
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 12px 16px;
-    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px; color: white; font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem; transition: border-color 0.2s; outline: none;
-    resize: vertical;
-  }
-  .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--green); }
-  .form-group select option { background: #1a1a1a; color: white; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .submit-btn {
-    width: 100%; padding: 14px;
-    background: var(--green); color: white; border: none;
-    border-radius: 8px; font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; font-weight: 700; cursor: pointer;
-    transition: all 0.2s; margin-top: 0.5rem;
-  }
-  .submit-btn:hover { background: var(--green-light); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,122,58,0.4); }
-
-  /* ── CTA BANNER ── */
-  .cta-banner {
-    background: var(--green);
-    padding: 5rem 5vw;
-    text-align: center;
-  }
-  .cta-banner h2 {
-    color: white; font-size: clamp(2rem, 4vw, 3.2rem);
-    margin-bottom: 1rem; font-family: 'DM Serif Display', serif;
-  }
-  .cta-banner p { color: rgba(255,255,255,0.8); font-size: 1.1rem; margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
-  .cta-banner .hero-ctas { justify-content: center; }
-  .cta-banner .btn-primary { background: white; color: var(--green); border-color: white; }
-  .cta-banner .btn-primary:hover { background: var(--gray-light); border-color: var(--gray-light); }
-  .cta-banner .btn-secondary { border-color: rgba(255,255,255,0.5); color: white; }
-  .cta-banner .btn-secondary:hover { background: rgba(255,255,255,0.15); border-color: white; }
-
-  /* ── FOOTER ── */
-  footer {
-    background: #050505; color: rgba(255,255,255,0.5);
-    padding: 3rem 5vw; font-size: 0.85rem;
-  }
-  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: white; letter-spacing: 0.04em; }
-  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
-  .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--green-light); }
-
-  /* ── PHONE FLOAT ── */
-  .phone-float {
-    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 990;
-    background: var(--green); color: white;
-    width: 56px; height: 56px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 20px rgba(45,122,58,0.5);
-    text-decoration: none; transition: transform 0.2s;
-    animation: bounce 3s ease-in-out infinite;
-  }
-  .phone-float:hover { transform: scale(1.1); }
-  .phone-float svg { width: 24px; height: 24px; fill: white; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-
-  /* ── URGENCY BAR ── */
-  .urgency-bar {
-    background: #1a0a00; color: #ff9a2e; border-bottom: 1px solid rgba(255,154,46,0.2);
-    text-align: center; padding: 10px 5vw; font-size: 0.85rem; font-weight: 600;
-  }
-  .urgency-bar span { color: rgba(255,255,255,0.6); font-weight: 400; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .hero-inner { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 0; }
-    .hero-visual { display: none; }
-    .re-grid, .about-grid, .contact-grid, .area-grid { grid-template-columns: 1fr; gap: 2rem; }
-    .nav-links { display: none; }
-    .hamburger { display: flex; }
-    .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
-  }
-  @media (max-width: 600px) {
-    section { padding: 3.5rem 5vw; }
-    .form-row { grid-template-columns: 1fr; }
-    .trust-strip { gap: 1.2rem; }
-    .trust-item { font-size: 0.8rem; }
-    h2 { font-size: 1.8rem; }
-  }
-
-  /* ── ANIMATIONS ── */
-  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s, transform 0.6s; }
-  .fade-up.visible { opacity: 1; transform: translateY(0); }
-</style>
-</head>
-<body>
-
-<!-- Urgency Bar -->
-<div class="urgency-bar">
-  ⚡ Fast Scheduling Available — Most Jobs Completed Within <strong>24–48 Hours</strong> <span>· Serving Denver & All Surrounding Areas</span>
-</div>
-
-<!-- Nav -->
-<nav>
-  <a href="#home" class="nav-logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+function CTAButtons({ centered = false }) {
+  return (
+    <div className={`flex flex-col gap-3 sm:flex-row ${centered ? "justify-center" : ""}`}>
+      <Button asChild size="lg" className="rounded-2xl text-base px-6 py-6 bg-green-600 hover:bg-green-700">
+        <a href="#/contact">Get Free Estimate</a>
+      </Button>
+      <Button asChild size="lg" variant="outline" className="rounded-2xl text-base px-6 py-6 border-black text-black hover:bg-black hover:text-white">
+        <a href={PHONE_LINK}>Call Now</a>
+      </Button>
     </div>
-    Denver Odor <span>Pros</span>
-  </a>
-  <div class="nav-links">
-    <a href="#home">Home</a>
-    <a href="#services">Services</a>
-    <a href="#about">About</a>
-    <a href="#service-area">Service Area</a>
-    <a href="#contact" class="nav-cta">Get Free Estimate</a>
-  </div>
-  <div class="hamburger" onclick="toggleMenu()" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
-</nav>
+  );
+}
 
-<!-- Mobile Menu -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#home" onclick="closeMenu()">Home</a>
-  <a href="#services" onclick="closeMenu()">Services</a>
-  <a href="#about" onclick="closeMenu()">About</a>
-  <a href="#service-area" onclick="closeMenu()">Service Area</a>
-  <a href="#testimonials" onclick="closeMenu()">Reviews</a>
-  <a href="#contact" onclick="closeMenu()">Get Free Estimate</a>
-</div>
+function Header({ route, navigate }) {
+  const [open, setOpen] = useState(false);
+  const navItems = [
+    ["Home", "home"],
+    ["Services", "services"],
+    ["About", "about"],
+    ["Contact", "contact"],
+  ];
 
-<!-- Hero -->
-<section id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-inner">
-    <div class="hero-left">
-      <div class="hero-badge">Denver's #1 Ozone Treatment Specialists</div>
-      <h1>Professional<br><em>Odor Removal</em><br>in Denver</h1>
-      <p class="hero-sub">Smoke, pet, mold & vehicle odor elimination — 100% chemical-free ozone treatment. We don't mask odors. We eliminate them at the source.</p>
-      <div class="hero-ctas">
-        <a href="#contact" class="btn-primary">
-          <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-          Get Free Estimate
-        </a>
-        <a href="tel:3038822989" class="btn-secondary">
-          <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-          Call (303) 882-2989
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Chemical Free</span></div>
-        <div class="stat-item"><span class="stat-num">24–48h</span><span class="stat-label">Fast Scheduling</span></div>
-        <div class="stat-item"><span class="stat-num">100mi</span><span class="stat-label">Service Radius</span></div>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="odor-card" onclick="toggleOdor(this)">
-        <div class="odor-card-header">
-          <span class="odor-icon">🚬</span>
-          <div><div class="odor-title">Smoke Odor</div><div class="odor-subtitle">Cigarette, fire, wildfire damage</div></div>
-          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+  return (
+    <header className="sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur">
+      <Container className="flex h-16 items-center justify-between">
+        <button className="text-left" onClick={() => navigate("home")}>
+          <div className="text-lg font-bold tracking-tight text-black">{BUSINESS_NAME}</div>
+          <div className="text-xs text-black/60">Denver, Colorado</div>
+        </button>
+
+        <nav className="hidden items-center gap-6 md:flex">
+          {navItems.map(([label, key]) => (
+            <button
+              key={key}
+              onClick={() => navigate(key)}
+              className={`text-sm font-medium transition ${route === key ? "text-green-700" : "text-black/75 hover:text-black"}`}
+            >
+              {label}
+            </button>
+          ))}
+          <Button asChild className="rounded-2xl bg-green-600 hover:bg-green-700">
+            <a href={PHONE_LINK}>{PHONE_DISPLAY}</a>
+          </Button>
+        </nav>
+
+        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </Container>
+
+      {open && (
+        <div className="border-t border-black/10 bg-white md:hidden">
+          <Container className="flex flex-col py-4">
+            {navItems.map(([label, key]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  navigate(key);
+                  setOpen(false);
+                }}
+                className="py-3 text-left text-base font-medium text-black/80"
+              >
+                {label}
+              </button>
+            ))}
+            <Button asChild className="mt-3 rounded-2xl bg-green-600 hover:bg-green-700">
+              <a href={PHONE_LINK}>{PHONE_DISPLAY}</a>
+            </Button>
+          </Container>
         </div>
-        <div class="odor-dropdown">
-          <div class="odor-dropdown-inner">
-            <p>Smoke odor molecules embed deep into walls, ceilings, HVAC systems, and fabrics. Our ozone treatment reaches every surface and permanently destroys the compounds — not just masks them.</p>
-            <div class="odor-tags">
-              <span>Cigarette & Cigar</span><span>Fire Damage</span><span>Wildfire Smoke</span><span>Pre-Sale Prep</span>
+      )}
+    </header>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative overflow-hidden bg-white py-16 sm:py-24">
+      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-white" />
+      <Container className="relative">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-sm text-green-800">
+              <MapPin className="h-4 w-4" /> Serving Denver and surrounding areas
             </div>
+            <h1 className="text-4xl font-bold leading-tight tracking-tight text-black sm:text-5xl lg:text-6xl">
+              Professional Odor Removal in Denver
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-black/70 sm:text-xl">
+              Smoke, Pet, Mold &amp; Vehicle Odor Elimination. We remove odors at the source with professional, chemical-free ozone treatment.
+            </p>
+            <div className="mt-8">
+              <CTAButtons />
+            </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {[
+                ["Chemical-free", "Ozone treatment"],
+                ["Fast scheduling", "24–48 hours"],
+                ["Results-focused", "No odor masking"],
+              ].map(([title, text], index) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.15 + index * 0.08 }}
+                  className="rounded-2xl border border-black/10 bg-white/80 p-4 shadow-sm"
+                >
+                  <div className="font-semibold text-black">{title}</div>
+                  <div className="text-sm text-black/65">{text}</div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45, delay: 0.1 }}>
+            <div className="overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-2xl">
+              <div className="relative h-[260px] sm:h-[340px] lg:h-[520px]">
+                <img
+                  src={IMAGE_ASSETS.hero}
+                  alt="Fresh clean home interior in Denver"
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.2 }}
+                  className="absolute bottom-0 left-0 right-0 p-6 text-white"
+                >
+                  <div className="text-sm uppercase tracking-[0.18em] text-white/70">Why people call us</div>
+                  <h2 className="mt-3 text-2xl font-bold sm:text-3xl">Bad odors can cost you buyers, tenants, and time.</h2>
+                  <div className="mt-5 grid gap-3">
+                    {[
+                      "Smoke odor removal in Denver",
+                      "Pet odor removal Denver",
+                      "Ozone treatment Denver",
+                      "Vehicle odor elimination",
+                    ].map((item) => (
+                      <div key={item} className="flex items-start gap-3 rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function TrustStrip() {
+  const items = [
+    { icon: ShieldCheck, title: "We eliminate odors at the source" },
+    { icon: Leaf, title: "100% chemical-free treatment" },
+    { icon: Clock3, title: "Fast turnaround and scheduling" },
+  ];
+
+  return (
+    <section className="border-y border-black/10 bg-green-50 py-6">
+      <Container>
+        <div className="grid gap-4 md:grid-cols-3">
+          {items.map((item) => (
+            <div key={item.title} className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
+              <item.icon className="h-5 w-5 text-green-700" />
+              <span className="font-medium text-black">{item.title}</span>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function SectionHeading({ eyebrow, title, text, centered = false }) {
+  return (
+    <div className={centered ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
+      {eyebrow && <div className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">{eyebrow}</div>}
+      <h2 className="text-3xl font-bold tracking-tight text-black sm:text-4xl">{title}</h2>
+      {text && <p className="mt-4 text-lg leading-8 text-black/70">{text}</p>}
+    </div>
+  );
+}
+
+function ServicesGrid({ compact = false }) {
+  return (
+    <div className={`grid gap-6 ${compact ? "md:grid-cols-2 xl:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-3"}`}>
+      {services.map((service, index) => (
+        <motion.div
+          key={service.title}
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.4, delay: index * 0.05 }}
+        >
+          <Card className="group overflow-hidden rounded-[1.5rem] border-black/10 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div className="h-48 overflow-hidden">
+              <img
+                src={serviceImageBySlug[service.slug] || IMAGE_ASSETS.hero}
+                alt={service.title}
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50">
+                <service.icon className="h-6 w-6 text-green-700" />
+              </div>
+              <h3 className="text-xl font-semibold text-black">{service.title}</h3>
+              <p className="mt-3 leading-7 text-black/70">{service.description}</p>
+              <div className="mt-5">
+                <Button asChild variant="outline" className="rounded-2xl border-black text-black hover:bg-black hover:text-white">
+                  <a href={`#/${service.slug}`}>Learn More</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    {
+      title: "1. Quick estimate",
+      text: "Call or message us with the type of odor, property size, and location. We schedule fast, often within 24–48 hours.",
+    },
+    {
+      title: "2. Ozone treatment",
+      text: "We prepare the space and run professional ozone equipment to break down odor molecules instead of covering them up.",
+    },
+    {
+      title: "3. Fresh, ready space",
+      text: "After treatment and ventilation, your property is left smelling clean and fresh, helping it show better and feel more move-in ready.",
+    },
+  ];
+
+  return (
+    <section className="py-16 sm:py-20">
+      <Container>
+        <SectionHeading
+          eyebrow="How it works"
+          title="A simple odor removal process"
+          text="Our ozone treatment is designed to target odor at the source in a way that is clear, effective, and easy to understand."
+        />
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {steps.map((step) => (
+            <div key={step.title} className="rounded-[1.5rem] border border-black/10 p-6">
+              <h3 className="text-xl font-semibold text-black">{step.title}</h3>
+              <p className="mt-3 leading-7 text-black/70">{step.text}</p>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function RealEstateSection() {
+  return (
+    <section className="bg-black py-16 text-white sm:py-20">
+      <Container>
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <SectionHeading
+              eyebrow="Real estate focused"
+              title="Help homes sell faster and rent faster"
+              text="Lingering odors can instantly turn off buyers and tenants. We help remove smoke, pet, mold, cooking, and stale odors so the property feels cleaner, fresher, and ready to show."
+            />
+          </div>
+          <div className="grid gap-4">
+            {[
+              "Great for listing prep and open houses",
+              "Useful for apartment turnovers and rental readiness",
+              "Trusted by property managers, landlords, and agents",
+              "Fast response when odors are delaying move-in or showings",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-white/85">
+                {item}
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-      <div class="odor-card" onclick="toggleOdor(this)">
-        <div class="odor-card-header">
-          <span class="odor-icon">🐾</span>
-          <div><div class="odor-title">Pet Odor & Urine</div><div class="odor-subtitle">Dogs, cats, and all animals</div></div>
-          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+      </Container>
+    </section>
+  );
+}
+
+function ServiceAreaSection() {
+  return (
+    <section className="py-16 sm:py-20">
+      <Container>
+        <SectionHeading
+          eyebrow="Service area"
+          title="Serving Denver and surrounding areas within 100 miles"
+          text="We provide odor removal services across Denver, Colorado and nearby communities. That includes Aurora, Lakewood, Littleton, Centennial, Englewood, Highlands Ranch, Parker, Castle Rock, Boulder, Longmont, Fort Collins, Colorado Springs, and other nearby areas."
+        />
+        <div className="mt-8 flex flex-wrap gap-3">
+          {SERVICE_AREAS.map((area) => (
+            <span key={area} className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-black/75 shadow-sm">
+              {area}
+            </span>
+          ))}
         </div>
-        <div class="odor-dropdown">
-          <div class="odor-dropdown-inner">
-            <p>Pet urine and dander odors penetrate carpet padding, subflooring, and drywall. Standard cleaning won't cut it — ozone oxidizes and eliminates odor at the molecular level throughout the entire space.</p>
-            <div class="odor-tags">
-              <span>Dog & Cat Urine</span><span>Pet Dander</span><span>Repeat Offenders</span><span>Move-In/Out Prep</span>
-            </div>
+      </Container>
+    </section>
+  );
+}
+
+function TestimonialsSection() {
+  return (
+    <section className="bg-green-50 py-16 sm:py-20">
+      <Container>
+        <SectionHeading
+          eyebrow="Testimonials"
+          title="Trusted by property owners and local clients"
+          text="Simple, professional service with clear communication and results that help spaces feel clean again."
+          centered
+        />
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {testimonials.map((item, index) => (
+            <motion.div
+              key={item.name}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.35, delay: index * 0.08 }}
+            >
+              <Card className="rounded-[1.5rem] border-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <CardContent className="p-6">
+                  <div className="mb-4 flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-current text-green-700" />
+                    ))}
+                  </div>
+                  <p className="leading-7 text-black/75">“{item.text}”</p>
+                  <div className="mt-5 font-semibold text-black">{item.name}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function BottomCTA() {
+  return (
+    <section className="py-16 sm:py-20">
+      <Container>
+        <div className="rounded-[2rem] bg-gradient-to-r from-green-700 to-black p-8 text-white shadow-2xl sm:p-10">
+          <SectionHeading
+            eyebrow="Get started"
+            title="Need odor removal in Denver?"
+            text="Don’t let bad odors cost you time, buyers, or tenants. Contact Denver Odor Pros for fast scheduling and a free estimate."
+          />
+          <div className="mt-8">
+            <CTAButtons />
           </div>
         </div>
-      </div>
-      <div class="odor-card" onclick="toggleOdor(this)">
-        <div class="odor-card-header">
-          <span class="odor-icon">🍄</span>
-          <div><div class="odor-title">Mold & Mildew</div><div class="odor-subtitle">Basements, bathrooms, crawlspaces</div></div>
-          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+      </Container>
+    </section>
+  );
+}
+
+function ContactPanel() {
+  return (
+    <section className="py-16 sm:py-20">
+      <Container>
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.4 }}
+            className="rounded-[2rem] border border-black/10 p-8"
+          >
+            <SectionHeading
+              eyebrow="Contact"
+              title="Get a free estimate"
+              text="Tell us what type of odor you are dealing with, where the property is located, and whether it is a home, vehicle, or commercial space."
+            />
+            <div className="mt-8 grid gap-4">
+              <a href={PHONE_LINK} className="rounded-2xl border border-black/10 p-4 transition hover:border-green-600 hover:bg-green-50">
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-green-700" />
+                  <div>
+                    <div className="text-sm text-black/60">Call now</div>
+                    <div className="text-lg font-semibold text-black">{PHONE_DISPLAY}</div>
+                  </div>
+                </div>
+              </a>
+              <div className="rounded-2xl border border-black/10 p-4">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-green-700" />
+                  <div>
+                    <div className="text-sm text-black/60">Location</div>
+                    <div className="text-lg font-semibold text-black">Denver, Colorado</div>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-black/10 p-4">
+                <div className="text-sm text-black/60">Service coverage</div>
+                <div className="mt-1 text-lg font-semibold text-black">Denver + surrounding areas within 100 miles</div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.08 }}
+            className="overflow-hidden rounded-[2rem] bg-green-50"
+          >
+            <div className="h-64">
+              <img src={IMAGE_ASSETS.contact} alt="Professional contact and service image" className="h-full w-full object-cover" />
+            </div>
+            <div className="p-8">
+              <h3 className="text-2xl font-bold text-black">Why contact us now</h3>
+              <div className="mt-5 space-y-4 text-black/75">
+                <p>Bad odors can delay showings, create bad first impressions, and make it harder to rent or sell a property.</p>
+                <p>We focus on fast scheduling, clear communication, and professional odor elimination using ozone treatment.</p>
+                <p>Whether you need smoke odor removal Denver, pet odor removal Denver, or ozone treatment Denver, we’re ready to help.</p>
+              </div>
+              <div className="mt-8">
+                <Button asChild size="lg" className="rounded-2xl bg-green-600 hover:bg-green-700">
+                  <a href={PHONE_LINK}>Call {PHONE_DISPLAY}</a>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
-        <div class="odor-dropdown">
-          <div class="odor-dropdown-inner">
-            <p>Musty mold and mildew odors linger long after remediation. Ozone treatment sanitizes the air and surfaces, neutralizing mold spores and the volatile organic compounds they release.</p>
-            <div class="odor-tags">
-              <span>Basement Mold</span><span>Bathroom Mildew</span><span>Water Damage</span><span>Crawlspaces</span>
+      </Container>
+    </section>
+  );
+}
+
+function HomePage() {
+  return (
+    <>
+      <Hero />
+      <TrustStrip />
+      <section className="py-16 sm:py-20">
+        <Container>
+          <SectionHeading
+            eyebrow="Services overview"
+            title="Odor removal services for homes, vehicles, and commercial spaces"
+            text="We help remove the odors that matter most: smoke, pet urine, mold, cooking smells, stale air, and vehicle odors."
+          />
+          <div className="mt-10">
+            <ServicesGrid />
+          </div>
+        </Container>
+      </section>
+      <RealEstateSection />
+      <HowItWorks />
+      <ServiceAreaSection />
+      <TestimonialsSection />
+      <BottomCTA />
+    </>
+  );
+}
+
+function ServicesPage() {
+  return (
+    <>
+      <section className="bg-green-50 py-16 sm:py-20">
+        <Container>
+          <SectionHeading
+            eyebrow="Services"
+            title="Professional odor removal services in Denver"
+            text="Denver Odor Pros provides ozone odor removal for residential, vehicle, and commercial needs. We eliminate odors at the source instead of masking them."
+          />
+        </Container>
+      </section>
+      <section className="py-16 sm:py-20">
+        <Container>
+          <ServicesGrid compact />
+        </Container>
+      </section>
+      <section className="bg-black py-16 text-white sm:py-20">
+        <Container>
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6">
+              <h3 className="text-2xl font-bold">Common odors we treat</h3>
+              <p className="mt-4 text-white/80">
+                Smoke, pet urine, mold, mildew, cooking odors, stale air, heavy interior odors, and vehicle smells.
+              </p>
+            </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6">
+              <h3 className="text-2xl font-bold">Dedicated pages for every service</h3>
+              <p className="mt-4 text-white/80">
+                Each service now has its own SEO-friendly page so customers can learn more and search engines can better understand your local service offerings.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="odor-card" onclick="toggleOdor(this)">
-        <div class="odor-card-header">
-          <span class="odor-icon">🚗</span>
-          <div><div class="odor-title">Vehicle Odor</div><div class="odor-subtitle">Cars, trucks, RVs, boats</div></div>
-          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
-        </div>
-        <div class="odor-dropdown">
-          <div class="odor-dropdown-inner">
-            <p>Vehicles trap odors in seats, carpet, headliner, and the HVAC system. Our compact ozone generators treat the entire interior — eliminating even the most stubborn embedded smells for good.</p>
-            <div class="odor-tags">
-              <span>Cars & Trucks</span><span>RVs & Campers</span><span>Boats</span><span>Pet & Smoke Smell</span>
+        </Container>
+      </section>
+      <BottomCTA />
+    </>
+  );
+}
+
+function ServiceDetailPage({ service }) {
+  return (
+    <>
+      <section className="bg-green-50 py-16 sm:py-20">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-4xl">
+              <div className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">Service page</div>
+              <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl">{service.heroTitle}</h1>
+              <p className="mt-5 text-lg leading-8 text-black/70">{service.longDescription}</p>
+              <div className="mt-8">
+                <CTAButtons />
+              </div>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45, delay: 0.08 }}>
+              <div className="overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-xl">
+                <img
+                  src={serviceImageBySlug[service.slug] || IMAGE_ASSETS.hero}
+                  alt={service.title}
+                  className="h-[280px] w-full object-cover sm:h-[420px]"
+                />
+              </div>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-16 sm:py-20">
+        <Container>
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.35 }}
+            >
+              <SectionHeading
+                eyebrow="Why this service matters"
+                title={`${service.title} for Denver homes, properties, and vehicles`}
+                text={`Denver Odor Pros serves Denver, Aurora, Lakewood, Littleton, Centennial, Englewood, Highlands Ranch, Parker, Castle Rock, Boulder, Longmont, Fort Collins, Colorado Springs, and nearby areas with professional ${service.title.toLowerCase()} solutions.`}
+              />
+              <div className="mt-6 space-y-4 text-black/75">
+                <p>
+                  Our goal is simple: remove odor at the source and help the space feel clean, fresh, and ready again. This is especially important when bad smells are affecting comfort, property value, buyer interest, tenant interest, or overall presentation.
+                </p>
+                <p>
+                  Whether you are a homeowner, landlord, real estate agent, Airbnb host, or property manager, fast odor removal can make a real difference when timing matters.
+                </p>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.35, delay: 0.08 }}
+              className="rounded-[2rem] border border-black/10 p-8"
+            >
+              <h3 className="text-2xl font-bold text-black">What this service includes</h3>
+              <div className="mt-6 space-y-4">
+                {service.bullets.map((item) => (
+                  <div key={item} className="flex items-start gap-3 rounded-2xl bg-green-50 p-4 text-black/80">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      <HowItWorks />
+      <ServiceAreaSection />
+      <BottomCTA />
+    </>
+  );
+}
+
+function AboutPage() {
+  return (
+    <>
+      <section className="py-16 sm:py-20">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
+            <div>
+              <SectionHeading
+                eyebrow="About us"
+                title="Denver Odor Pros is focused on real results"
+                text="We provide professional ozone odor removal services in Denver, Colorado for homes, apartments, vehicles, and commercial properties."
+              />
+            </div>
+            <div className="rounded-[2rem] border border-black/10 bg-green-50 p-8">
+              <h3 className="text-2xl font-bold text-black">What makes us different</h3>
+              <div className="mt-5 space-y-4 text-black/75">
+                <p>We do not try to cover up odors with perfume or temporary sprays.</p>
+                <p>We use chemical-free ozone treatment designed to break down odor molecules at the source.</p>
+                <p>Our service is built around fast scheduling, simple communication, and helping properties feel clean and ready again.</p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="odor-card" onclick="toggleOdor(this)">
-        <div class="odor-card-header">
-          <span class="odor-icon">🏡</span>
-          <div><div class="odor-title">Real Estate Odor</div><div class="odor-subtitle">Listings, rentals, Airbnb & more</div></div>
-          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
-        </div>
-        <div class="odor-dropdown">
-          <div class="odor-dropdown-inner">
-            <p>Bad smells kill deals. We partner with agents, landlords, and Airbnb hosts to ensure every property smells fresh before showings, tenant move-ins, or guest arrivals — helping you close faster.</p>
-            <div class="odor-tags">
-              <span>Pre-Listing Prep</span><span>Tenant Turnover</span><span>Airbnb & STR</span><span>Estate Properties</span>
-            </div>
+        </Container>
+      </section>
+
+      <section className="bg-black py-16 text-white sm:py-20">
+        <Container>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              "Trusted by homeowners and landlords",
+              "Helpful for listing prep and turnovers",
+              "Serving Denver and areas within 100 miles",
+            ].map((item) => (
+              <div key={item} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6 text-lg font-medium">
+                {item}
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </Container>
+      </section>
 
-<!-- Trust Strip -->
-<div class="trust-strip">
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-    We Eliminate Odors — Not Mask Them
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.82L5.71 21l1-1.29C7.72 18.2 10.79 16 17 16v4l5-5-5-5v4z"/></svg>
-    100% Chemical-Free Treatment
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-    24–48 Hour Fast Turnaround
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-    Denver & 100-Mile Radius
-  </div>
-</div>
+      <ServiceAreaSection />
+      <BottomCTA />
+    </>
+  );
+}
 
-<!-- Services -->
-<section id="services">
-  <div class="section-inner">
-    <div class="fade-up">
-      <span class="section-tag">What We Do</span>
-      <h2>Complete Odor <em>Elimination</em> Services</h2>
-      <p class="section-lead">Whether it's a home, vehicle, or commercial property — our professional ozone treatment destroys odor molecules at the source for permanent results.</p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card fade-up">
-        <span class="service-icon">🏠</span>
-        <h3>Residential Odor Removal</h3>
-        <p>Transform your home with professional ozone treatment. Perfect for homes, apartments, condos, and rental properties.</p>
-        <ul>
-          <li>Smoke & tobacco odors</li>
-          <li>Pet urine & dander</li>
-          <li>Cooking & food odors</li>
-          <li>General musty odors</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🚗</span>
-        <h3>Vehicle Odor Removal</h3>
-        <p>Restore your car, truck, RV, or boat to fresh. We eliminate embedded odors that no air freshener can touch.</p>
-        <ul>
-          <li>Cigarette & smoke smell</li>
-          <li>Pet accidents in vehicles</li>
-          <li>Mildew & water damage</li>
-          <li>Food & beverage spills</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🏢</span>
-        <h3>Commercial Odor Removal</h3>
-        <p>Keep your business smelling fresh and professional. We serve offices, restaurants, hotels, and rental units.</p>
-        <ul>
-          <li>Restaurants & kitchens</li>
-          <li>Hotels & Airbnb units</li>
-          <li>Offices & retail spaces</li>
-          <li>Storage units</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🐾</span>
-        <h3>Pet Odor Removal</h3>
-        <p>Stubborn pet urine and dander odors require more than cleaning — our ozone treatment eliminates them completely.</p>
-        <ul>
-          <li>Urine odor elimination</li>
-          <li>Pet dander removal</li>
-          <li>Repeat offense areas</li>
-          <li>Move-in/move-out prep</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🚬</span>
-        <h3>Smoke Odor Removal</h3>
-        <p>Cigarette, cigar, wildfire, or fire damage odors are among the hardest to remove — ozone handles all of them.</p>
-        <ul>
-          <li>Cigarette & cigar smoke</li>
-          <li>Fire & wildfire damage</li>
-          <li>Smoke-saturated walls</li>
-          <li>Pre-sale & pre-rental</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🍄</span>
-        <h3>Mold & Mildew Odor</h3>
-        <p>Musty mold odors in basements, bathrooms, and crawlspaces are no match for our ozone treatment process.</p>
-        <ul>
-          <li>Basement mold odors</li>
-          <li>Bathroom mildew</li>
-          <li>Water damage aftermath</li>
-          <li>Crawlspace treatment</li>
-        </ul>
-      </div>
-      <div class="service-card fade-up">
-        <span class="service-icon">🏡</span>
-        <h3>Real Estate Odor Removal</h3>
-        <p>Bad smells kill deals. We help agents, landlords, and sellers eliminate odors before listings, showings, and tenant turnovers — so properties sell faster and rent quicker.</p>
-        <ul>
-          <li>Pre-listing odor treatment</li>
-          <li>Between-tenant unit prep</li>
-          <li>Estate & foreclosure properties</li>
-          <li>Airbnb & short-term rentals</li>
-          <li>Open house preparation</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
+function ContactPage() {
+  return (
+    <>
+      <section className="bg-green-50 py-16 sm:py-20">
+        <Container>
+          <SectionHeading
+            eyebrow="Contact us"
+            title="Talk to Denver Odor Pros"
+            text="Need help with odor removal in Denver or a nearby city? Reach out for a free estimate and fast scheduling."
+          />
+        </Container>
+      </section>
+      <ContactPanel />
+      <ServiceAreaSection />
+    </>
+  );
+}
 
-<!-- How It Works -->
-<section id="how-it-works">
-  <div class="section-inner">
-    <div class="fade-up">
-      <span class="section-tag" style="background:rgba(45,122,58,0.2);color:#6dd97a;border:1px solid rgba(45,122,58,0.3);">The Process</span>
-      <h2>How Ozone Odor Removal Works</h2>
-      <p class="section-lead">Ozone treatment is the most effective, chemical-free method to permanently eliminate odors — not cover them up.</p>
-    </div>
-    <div class="steps-grid">
-      <div class="step fade-up">
-        <div class="step-num">01</div>
-        <h3>Schedule Your Appointment</h3>
-        <p>Contact us and we'll get you scheduled within 24–48 hours. We assess your property and give you a free estimate with no hidden fees.</p>
-      </div>
-      <div class="step fade-up">
-        <div class="step-num">02</div>
-        <h3>We Set Up the Ozone Generator</h3>
-        <p>Our professional-grade ozone generators are placed strategically throughout your space. The property must be vacated during treatment — no people or pets.</p>
-      </div>
-      <div class="step fade-up">
-        <div class="step-num">03</div>
-        <h3>Ozone Destroys Odor Molecules</h3>
-        <p>Ozone (O₃) is a supercharged oxygen molecule that oxidizes and permanently destroys odor-causing bacteria, mold spores, and volatile compounds at the source.</p>
-      </div>
-      <div class="step fade-up">
-        <div class="step-num">04</div>
-        <h3>Fresh, Clean Results</h3>
-        <p>After treatment, ozone converts back to clean oxygen. You return to a completely odor-free space — no chemicals, no residue, no masking agents. Just clean.</p>
-      </div>
-    </div>
-  </div>
-</section>
+function Footer({ navigate }) {
+  const currentYear = new Date().getFullYear();
 
-<!-- Real Estate -->
-<section id="real-estate">
-  <div class="section-inner">
-    <div class="re-grid">
-      <div class="re-left fade-up">
-        <span class="section-tag">For Real Estate Pros</span>
-        <h2>Sell Homes Faster. Rent Units Quicker.</h2>
-        <p style="color:rgba(255,255,255,0.8); line-height:1.8; margin-bottom: 1rem;">Bad smells kill deals. Studies show that odors are one of the #1 reasons buyers and renters walk away from otherwise perfect properties. One bad whiff and they're gone.</p>
-        <p style="color:rgba(255,255,255,0.75); line-height:1.8; margin-bottom: 1.5rem;">Denver Odor Pros partners with real estate agents, property managers, and landlords to ensure every property smells fresh and clean — maximizing your listing's potential.</p>
-        <ul class="re-list">
-          <li>Eliminate odors before showings & open houses</li>
-          <li>Prepare vacant units between tenants</li>
-          <li>Treat Airbnb properties between guests</li>
-          <li>Remove smoke odors from estate properties</li>
-          <li>Increase perceived value of every listing</li>
-        </ul>
-        <a href="#contact" class="btn-primary" style="margin-top:1.5rem; display:inline-flex; background:white; color:var(--green); border-color:white;">
-          Partner With Us
-        </a>
-      </div>
-      <div class="re-right fade-up">
-        <h3>We Serve All Real Estate Professionals</h3>
-        <div class="audience-tags">
-          <span class="audience-tag">🏡 Homeowners</span>
-          <span class="audience-tag">🤝 Real Estate Agents</span>
-          <span class="audience-tag">🏘️ Property Managers</span>
-          <span class="audience-tag">🔑 Landlords</span>
-          <span class="audience-tag">🛏️ Airbnb Hosts</span>
-          <span class="audience-tag">🏗️ Home Flippers</span>
-          <span class="audience-tag">🏨 Hotels & Motels</span>
-          <span class="audience-tag">📦 Storage Facilities</span>
-        </div>
-        <div class="re-stat-block">
-          <p>⚠️ <strong style="color:white;">Bad odors cost you money.</strong> Whether it's a buyer walking away from a $400,000 home or a tenant turning down a rental unit — the cost of one lost deal far exceeds the cost of professional odor removal. Don't let smells stand between you and your next closed deal.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Testimonials -->
-<section id="testimonials">
-  <div class="section-inner">
-    <div class="fade-up">
-      <span class="section-tag">Reviews</span>
-      <h2>What Denver Customers Are Saying</h2>
-      <p class="section-lead">Real results from real customers across Denver and surrounding areas.</p>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"I couldn't believe the difference. We had cigarette smell baked into our house for 15 years. After Denver Odor Pros came in, it was completely gone. Not masked — actually gone. My realtor said it was the best money I ever spent before a listing."</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">SK</div>
-          <div><div class="author-name">Sandra K.</div><div class="author-role">Homeowner — Littleton, CO</div></div>
-        </div>
-      </div>
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"I manage 12 rental units in Aurora and I call Denver Odor Pros between every tenant. Pet odors, smoke — they handle it all fast. My turnaround time went from 2 weeks to 3 days. Total game changer for my business."</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">MR</div>
-          <div><div class="author-name">Marcus R.</div><div class="author-role">Property Manager — Aurora, CO</div></div>
-        </div>
-      </div>
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"My car smelled like wet dog for two years. Tried everything — sprays, shampooing, baking soda. Nothing worked. One ozone treatment from these guys and it smells brand new. Should've called sooner!"</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">JL</div>
-          <div><div class="author-name">Jessica L.</div><div class="author-role">Vehicle Treatment — Centennial, CO</div></div>
-        </div>
-      </div>
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"As a real estate agent, I send all my sellers to Denver Odor Pros before we list. Twice now it's helped close deals faster and at full price. One home had a dog smell that nearly tanked the deal — this saved it."</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">TP</div>
-          <div><div class="author-name">Tom P.</div><div class="author-role">Real Estate Agent — Parker, CO</div></div>
-        </div>
-      </div>
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"Bought a foreclosed home that had serious mold and pet odor issues. Denver Odor Pros came out quickly, explained everything clearly, and the results were incredible. Affordable and professional."</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">AB</div>
-          <div><div class="author-name">Alicia B.</div><div class="author-role">Home Buyer — Highlands Ranch, CO</div></div>
-        </div>
-      </div>
-      <div class="testimonial fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>"Run an Airbnb in Boulder and had a guest who smoked inside. Denver Odor Pros got the unit treated the next day and my next guests had zero complaints. Fast, professional, and reasonably priced."</blockquote>
-        <div class="testimonial-author">
-          <div class="author-avatar">CH</div>
-          <div><div class="author-name">Chris H.</div><div class="author-role">Airbnb Host — Boulder, CO</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Service Area -->
-<section id="service-area">
-  <div class="section-inner">
-    <div class="area-grid">
-      <div class="fade-up">
-        <span class="section-tag">Service Area</span>
-        <h2>Denver & All Surrounding Areas Within 100 Miles</h2>
-        <p class="section-lead" style="margin-bottom:1.5rem;">Based in Denver, Colorado — we travel to you. If you're within 100 miles of Denver, we've got you covered.</p>
-        <h3 style="font-size:1rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--gray); margin-bottom:0.75rem;">Cities We Serve for Odor Removal</h3>
-        <div class="cities-grid">
-          <span class="city-tag">Denver, CO</span>
-          <span class="city-tag">Aurora</span>
-          <span class="city-tag">Lakewood</span>
-          <span class="city-tag">Littleton</span>
-          <span class="city-tag">Centennial</span>
-          <span class="city-tag">Englewood</span>
-          <span class="city-tag">Highlands Ranch</span>
-          <span class="city-tag">Parker</span>
-          <span class="city-tag">Castle Rock</span>
-          <span class="city-tag">Boulder</span>
-          <span class="city-tag">Longmont</span>
-          <span class="city-tag">Fort Collins</span>
-          <span class="city-tag">Colorado Springs</span>
-          <span class="city-tag">Thornton</span>
-          <span class="city-tag">Westminster</span>
-          <span class="city-tag">Arvada</span>
-          <span class="city-tag">Commerce City</span>
-          <span class="city-tag">Brighton</span>
-          <span class="city-tag">Golden</span>
-          <span class="city-tag">Pueblo</span>
-          <span class="city-tag">& Nearby Areas</span>
-        </div>
-        <p style="margin-top:1.5rem; color:var(--gray); font-size:0.9rem;">Not sure if we serve your area? Call us at <a href="tel:3038822989" style="color:var(--green); font-weight:700;">(303) 882-2989</a> and we'll confirm within minutes.</p>
-      </div>
-      <div class="area-visual fade-up">
-        <div class="area-stat">
-          <div class="area-stat-num">100</div>
-          <div class="area-stat-text"><h4>Mile Service Radius</h4><p>From Denver, CO — we come to you anywhere within 100 miles</p></div>
-        </div>
-        <div class="area-stat">
-          <div class="area-stat-num">20+</div>
-          <div class="area-stat-text"><h4>Cities Served</h4><p>Denver metro, Front Range, and surrounding Colorado communities</p></div>
-        </div>
-        <div class="area-stat">
-          <div class="area-stat-num">24h</div>
-          <div class="area-stat-text"><h4>Fast Scheduling</h4><p>Most appointments available within 24–48 hours of your call</p></div>
-        </div>
-        <div class="area-stat">
-          <div class="area-stat-num">$0</div>
-          <div class="area-stat-text"><h4>Free Estimates</h4><p>No cost, no obligation estimates — just honest pricing</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- About -->
-<section id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div class="about-left fade-up">
-        <span class="section-tag">About Us</span>
-        <h2>Denver's Professional <em>Ozone Experts</em></h2>
-        <p>Denver Odor Pros was founded with a simple mission: provide Denver homeowners, property managers, and businesses with the most effective, chemical-free odor removal solution available.</p>
-        <p>We use professional-grade ozone generators and proven treatment methods to permanently eliminate odors — not cover them up with fragrances or masking agents. When we're done, your space smells like nothing but fresh air.</p>
-        <p>We serve all of Denver and surrounding areas within 100 miles, offering fast scheduling and honest, transparent pricing on every job.</p>
-        <ul class="values-list">
-          <li><span>✓</span><span>We eliminate odors at the source — not mask them</span></li>
-          <li><span>🌿</span><span>100% chemical-free ozone treatment</span></li>
-          <li><span>⚡</span><span>Fast 24–48 hour scheduling available</span></li>
-          <li><span>💰</span><span>Free estimates with transparent pricing</span></li>
-          <li><span>📍</span><span>Locally based in Denver, Colorado</span></li>
-          <li><span>🤝</span><span>Trusted by agents, landlords & homeowners</span></li>
-        </ul>
-      </div>
-      <div class="about-right fade-up">
-        <h3>Why Ozone Treatment Is Superior</h3>
-        <div class="why-item">
-          <h4>vs. Air Fresheners & Sprays</h4>
-          <p>Sprays and fresheners only mask odors temporarily. Ozone molecules react with and permanently destroy the odor-causing compounds at the molecular level.</p>
-        </div>
-        <div class="why-item">
-          <h4>vs. Deep Cleaning Alone</h4>
-          <p>Cleaning removes surface contamination, but odors embedded in walls, carpet fibers, and HVAC systems require ozone to fully eliminate.</p>
-        </div>
-        <div class="why-item">
-          <h4>vs. Chemical Treatments</h4>
-          <p>Many odor treatments use harsh chemicals with their own smells and health risks. Ozone is completely natural — it's just supercharged oxygen that converts back to clean air.</p>
-        </div>
-        <div class="why-item">
-          <h4>The Ozone Advantage</h4>
-          <p>Ozone penetrates porous surfaces, reaches every corner, and oxidizes odor molecules permanently. It's the same technology used by hospitals, hotels, and fire restoration companies.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Contact -->
-<section id="contact">
-  <div class="section-inner">
-    <div class="fade-up" style="margin-bottom: 3rem;">
-      <span class="section-tag">Contact Us</span>
-      <h2>Get Your Free Estimate Today</h2>
-      <p class="section-lead">No pressure. No obligations. Just honest pricing and fast scheduling. Most jobs completed within 24–48 hours of your call.</p>
-    </div>
-    <div class="contact-grid">
-      <div class="contact-info">
-        <div class="contact-item">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+  return (
+    <footer className="border-t border-black/10 bg-white py-10">
+      <Container>
+        <div className="grid gap-8 md:grid-cols-3">
+          <div>
+            <div className="text-lg font-bold text-black">{BUSINESS_NAME}</div>
+            <p className="mt-3 text-sm leading-6 text-black/65">
+              Professional ozone odor removal services for homes, apartments, vehicles, and commercial properties in Denver, Colorado.
+            </p>
           </div>
           <div>
-            <h4>Call or Text</h4>
-            <a href="tel:3038822989">(303) 882-2989</a>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-          </div>
-          <div>
-            <h4>Service Area</h4>
-            <p>Denver, CO & 100-Mile Radius</p>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">
-            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <div className="font-semibold text-black">Pages</div>
+            <div className="mt-3 flex flex-col gap-2 text-sm text-black/70">
+              {[
+                ["Home", "home"],
+                ["Services", "services"],
+                ["About", "about"],
+                ["Contact", "contact"],
+              ].map(([label, key]) => (
+                <button key={key} onClick={() => navigate(key)} className="text-left hover:text-black">
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
           <div>
-            <h4>Hours</h4>
-            <p>Mon–Sat: 7am–7pm<br><span style="font-size:0.85rem; opacity:0.6; font-weight:400;">Emergency calls welcome</span></p>
+            <div className="font-semibold text-black">Contact</div>
+            <div className="mt-3 space-y-2 text-sm text-black/70">
+              <a href={PHONE_LINK} className="block hover:text-black">{PHONE_DISPLAY}</a>
+              <div>Denver, Colorado</div>
+              <div>Serving Denver + 100 miles</div>
+            </div>
           </div>
         </div>
-        <div style="padding: 2rem; border-radius: 12px; border: 1px solid rgba(45,122,58,0.3); background: rgba(45,122,58,0.1);">
-          <p style="color: #6dd97a; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem;">⚡ QUICK RESPONSE GUARANTEE</p>
-          <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.6;">We respond to all inquiries within 2 hours during business hours. Most jobs are scheduled within 24–48 hours. Bad smells are costing you money — the sooner you call, the sooner we fix it.</p>
+        <div className="mt-10 border-t border-black/10 pt-6 text-sm text-black/50">
+          © {currentYear} {BUSINESS_NAME}. All rights reserved.
         </div>
-      </div>
-      <div class="contact-form fade-up">
-        <h3>Request Your Free Estimate</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>First Name</label>
-            <input type="text" placeholder="John">
-          </div>
-          <div class="form-group">
-            <label>Last Name</label>
-            <input type="text" placeholder="Smith">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" placeholder="(303) 555-0100">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="john@email.com">
-        </div>
-        <div class="form-group">
-          <label>Service Type</label>
-          <select>
-            <option value="">Select a service...</option>
-            <option>Residential Odor Removal</option>
-            <option>Vehicle Odor Removal</option>
-            <option>Commercial Odor Removal</option>
-            <option>Pet Odor Removal</option>
-            <option>Smoke Odor Removal</option>
-            <option>Mold & Mildew Odor</option>
-            <option>Other / Not Sure</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>City / Location</label>
-          <input type="text" placeholder="Denver, Littleton, Aurora...">
-        </div>
-        <div class="form-group">
-          <label>Tell Us About Your Odor Problem</label>
-          <textarea rows="4" placeholder="Describe the odor issue, property type, and any relevant details..."></textarea>
-        </div>
-        <button class="submit-btn" onclick="handleSubmit(this)">Send My Free Estimate Request →</button>
-      </div>
+      </Container>
+    </footer>
+  );
+}
+
+export default function DenverOdorProsWebsite() {
+  const [route, navigate] = useHashRoute();
+  const serviceSlugs = services.map((item) => item.slug);
+  const validRoute = useMemo(() => {
+    return ["home", "services", "about", "contact", ...serviceSlugs].includes(route) ? route : "home";
+  }, [route]);
+
+  const servicePage = services.find((item) => item.slug === validRoute);
+
+  const pages = {
+    home: <HomePage />,
+    services: <ServicesPage />,
+    about: <AboutPage />,
+    contact: <ContactPage />,
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-black">
+      <SEO route={validRoute} />
+      <Header route={validRoute} navigate={navigate} />
+      <main>{servicePage ? <ServiceDetailPage service={servicePage} /> : pages[validRoute]}</main>
+      <Footer navigate={navigate} />
     </div>
-  </div>
-</section>
-
-<!-- CTA Banner -->
-<div class="cta-banner">
-  <h2>Don't Let Bad Odors Cost You Another Deal</h2>
-  <p>Fast scheduling, chemical-free treatment, and permanent results. Denver Odor Pros is ready to help.</p>
-  <div class="hero-ctas">
-    <a href="#contact" class="btn-primary">Get Free Estimate</a>
-    <a href="tel:3038822989" class="btn-secondary">
-      <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-      Call (303) 882-2989
-    </a>
-  </div>
-</div>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div>
-      <div class="footer-logo">Denver Odor Pros</div>
-      <div style="margin-top:4px; font-size:0.8rem;">Professional Ozone Odor Removal · Denver, Colorado</div>
-      <div style="margin-top:4px; font-size:0.8rem;">Serving Denver & 100-Mile Radius · (303) 882-2989</div>
-    </div>
-    <div class="footer-links">
-      <a href="#home">Home</a>
-      <a href="#services">Services</a>
-      <a href="#about">About</a>
-      <a href="#service-area">Service Area</a>
-      <a href="#contact">Contact</a>
-      <a href="tel:3038822989">(303) 882-2989</a>
-    </div>
-    <div style="font-size:0.8rem; width:100%; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08); text-align:center;">
-      © 2025 Denver Odor Pros · Odor Removal Denver · Smoke Odor Removal Denver · Pet Odor Removal Denver · Ozone Treatment Denver, CO
-    </div>
-  </div>
-</footer>
-
-<!-- Floating Phone Button -->
-<a href="tel:3038822989" class="phone-float" title="Call Denver Odor Pros">
-  <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-</a>
-
-<script>
-  // Mobile menu
-  function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-  }
-  function closeMenu() {
-    document.getElementById('mobileMenu').classList.remove('open');
-  }
-
-  // Scroll animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 80);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-  // Form submit
-  function handleSubmit(btn) {
-    btn.textContent = '✓ Request Sent! We\'ll contact you within 2 hours.';
-    btn.style.background = '#1e5c28';
-    btn.disabled = true;
-  }
-
-  // Odor card accordion
-  function toggleOdor(card) {
-    const isOpen = card.classList.contains('open');
-    document.querySelectorAll('.odor-card').forEach(c => c.classList.remove('open'));
-    if (!isOpen) card.classList.add('open');
-  }
-
-  // Active nav on scroll
-  const sections = document.querySelectorAll('section[id]');
-  window.addEventListener('scroll', () => {
-    const pos = window.scrollY + 100;
-    sections.forEach(s => {
-      if (pos >= s.offsetTop && pos < s.offsetTop + s.offsetHeight) {
-        document.querySelectorAll('.nav-links a').forEach(a => {
-          a.style.color = a.getAttribute('href') === '#' + s.id ? 'var(--green)' : '';
-        });
-      }
-    });
-  });
-</script>
-</body>
-</html>
+  );
+}
