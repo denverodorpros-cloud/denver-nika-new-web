@@ -179,21 +179,43 @@
   .odor-card {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; padding: 1.2rem 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
+    border-radius: 12px;
     backdrop-filter: blur(8px);
     transition: border-color 0.3s;
+    overflow: hidden;
+    cursor: pointer;
   }
   .odor-card:hover { border-color: rgba(45,122,58,0.4); }
+  .odor-card.open { border-color: rgba(45,122,58,0.5); }
+  .odor-card-header {
+    padding: 1.2rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
   .odor-icon { font-size: 1.8rem; flex-shrink: 0; }
   .odor-title { color: white; font-weight: 600; font-size: 0.95rem; }
-  .odor-desc { color: rgba(248,248,246,0.5); font-size: 0.8rem; }
+  .odor-subtitle { color: rgba(248,248,246,0.5); font-size: 0.8rem; }
   .odor-check {
     margin-left: auto; width: 24px; height: 24px;
     background: var(--green); border-radius: 50%;
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: transform 0.3s, background 0.3s;
   }
   .odor-check svg { width: 12px; height: 12px; fill: white; }
+  .odor-card.open .odor-check { transform: rotate(45deg); background: rgba(255,255,255,0.2); }
+  .odor-dropdown {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease;
+    border-top: 0px solid rgba(255,255,255,0.08);
+  }
+  .odor-card.open .odor-dropdown { max-height: 220px; border-top-width: 1px; }
+  .odor-dropdown-inner { padding: 1rem 1.5rem 1.2rem 4.5rem; }
+  .odor-dropdown-inner p { color: rgba(248,248,246,0.65); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.75rem; }
+  .odor-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .odor-tags span {
+    background: rgba(45,122,58,0.2); border: 1px solid rgba(45,122,58,0.35);
+    color: #8ee897; font-size: 0.72rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 100px;
+  }
 
   /* ── TRUST STRIP ── */
   .trust-strip {
@@ -576,25 +598,80 @@
       </div>
     </div>
     <div class="hero-visual">
-      <div class="odor-card">
-        <span class="odor-icon">🚬</span>
-        <div><div class="odor-title">Smoke Odor</div><div class="odor-desc">Cigarette, fire, wildfire damage</div></div>
-        <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <div class="odor-card" onclick="toggleOdor(this)">
+        <div class="odor-card-header">
+          <span class="odor-icon">🚬</span>
+          <div><div class="odor-title">Smoke Odor</div><div class="odor-subtitle">Cigarette, fire, wildfire damage</div></div>
+          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="odor-dropdown">
+          <div class="odor-dropdown-inner">
+            <p>Smoke odor molecules embed deep into walls, ceilings, HVAC systems, and fabrics. Our ozone treatment reaches every surface and permanently destroys the compounds — not just masks them.</p>
+            <div class="odor-tags">
+              <span>Cigarette & Cigar</span><span>Fire Damage</span><span>Wildfire Smoke</span><span>Pre-Sale Prep</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="odor-card">
-        <span class="odor-icon">🐾</span>
-        <div><div class="odor-title">Pet Odor & Urine</div><div class="odor-desc">Dogs, cats, and all animals</div></div>
-        <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <div class="odor-card" onclick="toggleOdor(this)">
+        <div class="odor-card-header">
+          <span class="odor-icon">🐾</span>
+          <div><div class="odor-title">Pet Odor & Urine</div><div class="odor-subtitle">Dogs, cats, and all animals</div></div>
+          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="odor-dropdown">
+          <div class="odor-dropdown-inner">
+            <p>Pet urine and dander odors penetrate carpet padding, subflooring, and drywall. Standard cleaning won't cut it — ozone oxidizes and eliminates odor at the molecular level throughout the entire space.</p>
+            <div class="odor-tags">
+              <span>Dog & Cat Urine</span><span>Pet Dander</span><span>Repeat Offenders</span><span>Move-In/Out Prep</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="odor-card">
-        <span class="odor-icon">🍄</span>
-        <div><div class="odor-title">Mold & Mildew</div><div class="odor-desc">Basements, bathrooms, crawlspaces</div></div>
-        <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <div class="odor-card" onclick="toggleOdor(this)">
+        <div class="odor-card-header">
+          <span class="odor-icon">🍄</span>
+          <div><div class="odor-title">Mold & Mildew</div><div class="odor-subtitle">Basements, bathrooms, crawlspaces</div></div>
+          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="odor-dropdown">
+          <div class="odor-dropdown-inner">
+            <p>Musty mold and mildew odors linger long after remediation. Ozone treatment sanitizes the air and surfaces, neutralizing mold spores and the volatile organic compounds they release.</p>
+            <div class="odor-tags">
+              <span>Basement Mold</span><span>Bathroom Mildew</span><span>Water Damage</span><span>Crawlspaces</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="odor-card">
-        <span class="odor-icon">🚗</span>
-        <div><div class="odor-title">Vehicle Odor</div><div class="odor-desc">Cars, trucks, RVs, boats</div></div>
-        <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <div class="odor-card" onclick="toggleOdor(this)">
+        <div class="odor-card-header">
+          <span class="odor-icon">🚗</span>
+          <div><div class="odor-title">Vehicle Odor</div><div class="odor-subtitle">Cars, trucks, RVs, boats</div></div>
+          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="odor-dropdown">
+          <div class="odor-dropdown-inner">
+            <p>Vehicles trap odors in seats, carpet, headliner, and the HVAC system. Our compact ozone generators treat the entire interior — eliminating even the most stubborn embedded smells for good.</p>
+            <div class="odor-tags">
+              <span>Cars & Trucks</span><span>RVs & Campers</span><span>Boats</span><span>Pet & Smoke Smell</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="odor-card" onclick="toggleOdor(this)">
+        <div class="odor-card-header">
+          <span class="odor-icon">🏡</span>
+          <div><div class="odor-title">Real Estate Odor</div><div class="odor-subtitle">Listings, rentals, Airbnb & more</div></div>
+          <div class="odor-check"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        </div>
+        <div class="odor-dropdown">
+          <div class="odor-dropdown-inner">
+            <p>Bad smells kill deals. We partner with agents, landlords, and Airbnb hosts to ensure every property smells fresh before showings, tenant move-ins, or guest arrivals — helping you close faster.</p>
+            <div class="odor-tags">
+              <span>Pre-Listing Prep</span><span>Tenant Turnover</span><span>Airbnb & STR</span><span>Estate Properties</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1096,6 +1173,13 @@
     btn.textContent = '✓ Request Sent! We\'ll contact you within 2 hours.';
     btn.style.background = '#1e5c28';
     btn.disabled = true;
+  }
+
+  // Odor card accordion
+  function toggleOdor(card) {
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.odor-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
   }
 
   // Active nav on scroll
